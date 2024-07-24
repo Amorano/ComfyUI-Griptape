@@ -67,3 +67,55 @@ export function node_add_dynamic(nodeType, prefix, type='*', count=-1) {
     }
     return nodeType;
 }
+
+
+const CONVERTED_TYPE = "converted-widget";
+
+// TAKEN FROM:  ComfyUI\web\extensions\core\widgetInputs.js
+// IN CASE someone tries to tell you they invented core functions...
+// they simply are not exported
+//
+export function hideWidget(node, widget, suffix = "") {
+	if (widget.type?.startsWith(CONVERTED_TYPE)) return;
+	widget.origType = widget.type;
+	widget.origComputeSize = widget.computeSize;
+	widget.origSerializeValue = widget.serializeValue;
+	widget.computeSize = () => [0, -4]; // -4 is due to the gap litegraph adds between widgets automatically
+	widget.type = CONVERTED_TYPE + suffix;
+	widget.serializeValue = () => {
+		// Prevent serializing the widget if we have no input linked
+		if (!node.inputs) {
+			return undefined;
+		}
+		let node_input = node.inputs.find((i) => i.widget?.name === widget.name);
+
+		if (!node_input || !node_input.link) {
+			return undefined;
+		}
+		return widget.origSerializeValue ? widget.origSerializeValue() : widget.value;
+	};
+
+	// Hide any linked widgets, e.g. seed+seedControl
+	if (widget.linkedWidgets) {
+		for (const w of widget.linkedWidgets) {
+			hideWidget(node, w, ":" + widget.name);
+		}
+	}
+}
+
+export function showWidget(widget) {
+	widget.type = widget.origType;
+	widget.computeSize = widget.origComputeSize;
+	widget.serializeValue = widget.origSerializeValue;
+
+	delete widget.origType;
+	delete widget.origComputeSize;
+	delete widget.origSerializeValue;
+
+	// Hide any linked widgets, e.g. seed+seedControl
+	if (widget.linkedWidgets) {
+		for (const w of widget.linkedWidgets) {
+			showWidget(w);
+		}
+	}
+}

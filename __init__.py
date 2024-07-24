@@ -39,6 +39,7 @@ from .nodes.config.gtUIOllamaStructureConfig import gtUIOllamaStructureConfig
 from .nodes.config.gtUIOpenAiCompatibleConfig import gtUIOpenAiCompatibleConfig
 from .nodes.config.gtUIOpenAiStructureConfig import gtUIOpenAiStructureConfig
 from .nodes.config.gtUIStructureConfig import gtUIStructureConfig
+from .nodes.config.gtUIGenericConfig import gtUIGenericConfig
 
 # CONVERT
 from .nodes.convert.gtUITextToClipEncode import gtUITextToClipEncode
@@ -270,6 +271,8 @@ NODE_CLASS_MAPPINGS = {
     "Griptape Agent Config: Ollama": gtUIOllamaStructureConfig,
     "Griptape Agent Config: OpenAI": gtUIOpenAiStructureConfig,
     "Griptape Agent Config: OpenAI Compatible": gtUIOpenAiCompatibleConfig,
+    "Griptape Agent Config: Multi-service Node": gtUIGenericConfig,
+
     # AGENT RULES
     "Griptape Create: Rules": gtUIRule,
     "Griptape Combine: Rules List": RulesList,
